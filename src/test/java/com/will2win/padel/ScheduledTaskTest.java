@@ -15,10 +15,10 @@ public class ScheduledTaskTest {
     @SpyBean
     ScheduledTasks tasks;
 
-    @Test
-    public void reportCurrentTime() {
-        await().atMost(Duration.TEN_SECONDS).untilAsserted(() -> {
-            verify(tasks, atLeast(2)).reportCurrentTime();
-        });
-    }
+ //   @Test
+  //  public void reportCurrentTime() {
+   //     await().atMost(Duration.TEN_SECONDS).untilAsserted(() -> {
+   //         verify(tasks, atLeast(2)).reportCurrentTime();
+   //     });
+   // }
 }
