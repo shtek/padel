@@ -22,7 +22,6 @@ public class ChromeDriverHelper {
    //this is working while in IntelliJ but this will not work from jar file
     //will need to fall into driver folder
 
-    private static String chromeDriverLocationWindows = "C:/Users/shtek/padel/chromedriver.exe";
     //something for linux
     public static boolean isWindowsOperatingSystem() {
         String os = System.getProperty("os.name");
@@ -33,17 +32,8 @@ public class ChromeDriverHelper {
 
       System.out.println("usr dirr!!!!!!!!!!!!!!!!11" + System.getProperty("user.dir"));
 
-     //   if (isWindowsOperatingSystem()) {
-            System.setProperty("webdriver.chrome.driver", chromeDriverLocation);
-    //    }
-    //    else
-     //   {
-    //        System.setProperty("webdriver.chrome.driver", "classes/drivers/Linux/chromedriver");
-      //  }
-
-       // System.setProperty("webdriver.chrome.driver", chromeDriverLocation);
+                 System.setProperty("webdriver.chrome.driver", chromeDriverLocation);
       ChromeDriver driver = new ChromeDriver();
-      //  driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         return driver;
     }
 }

@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -55,8 +56,22 @@ public class WorkerBean {
                 t.until(ExpectedConditions.visibilityOf(email));
                 t.until(ExpectedConditions.elementToBeClickable(email));
                 email.sendKeys(new CharSequence[]{"shtek@yahoo.com"});
+                WebElement pass = chromeDriver.findElement(By.id("loginPassword"));
+                t.until(ExpectedConditions.visibilityOf(pass));
+                t.until(ExpectedConditions.elementToBeClickable(pass));
+                pass.sendKeys(password);
+                WebElement login = chromeDriver.findElement(By.id("loginBtn"));
+                t.until(ExpectedConditions.visibilityOf(login));
+                t.until(ExpectedConditions.elementToBeClickable(login));
+                login.click();
 
-                Thread.sleep(10000L);
+                chromeDriver.get("https://www.openplay.co.uk/booking/place/154/select-membership?select=181853");
+                Select dateDropDown = new Select(chromeDriver.findElement(By.id("change-date")));
+
+
+
+
+                Thread.sleep(9000L);
             }
             catch (Exception e)
             {
