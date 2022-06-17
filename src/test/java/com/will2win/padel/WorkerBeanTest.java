@@ -13,7 +13,7 @@ public class WorkerBeanTest {
     WorkerBean workerBean;
     @Test
     public void doTest() {
-
-       workerBean.doWork(1,2);
+       //this means 2 weeks
+       workerBean.doWork(14,7);
     }
 }

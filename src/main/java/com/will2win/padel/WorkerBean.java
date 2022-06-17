@@ -1,11 +1,16 @@
 package com.will2win.padel;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -18,6 +23,7 @@ import static com.will2win.padel.ChromeDriverHelper.isWindowsOperatingSystem;
 @Configuration
 @PropertySource("classpath:password.properties")
 public class WorkerBean {
+    private static final Logger log = LoggerFactory.getLogger(WorkerBean.class);
 
         public WorkerBean() {
         }
@@ -27,7 +33,36 @@ public class WorkerBean {
     private   String chromeDriverLocationWindows;
 
 
+      //subroutines that will navigate through the page:
+    private void loginFunc(ChromeDriver chromeDriver) {
+        try {
+            WebDriverWait t = new WebDriverWait(chromeDriver, Duration.ofSeconds(1));
 
+            chromeDriver.get("https://www.openplay.co.uk/embed-my-account/947");
+            chromeDriver.switchTo().frame(0);
+
+            WebElement element = chromeDriver.findElement(By.xpath("//*[ text() = 'Existing User']"));
+            element.click();
+
+            WebElement email = chromeDriver.findElement(By.id("loginEmail"));
+
+            t.until(ExpectedConditions.visibilityOf(email));
+            t.until(ExpectedConditions.elementToBeClickable(email));
+            email.sendKeys(new CharSequence[]{"shtek@yahoo.com"});
+            WebElement pass = chromeDriver.findElement(By.id("loginPassword"));
+            t.until(ExpectedConditions.visibilityOf(pass));
+            t.until(ExpectedConditions.elementToBeClickable(pass));
+            pass.sendKeys(password);
+            WebElement login = chromeDriver.findElement(By.id("loginBtn"));
+            t.until(ExpectedConditions.visibilityOf(login));
+            t.until(ExpectedConditions.elementToBeClickable(login));
+            login.click();
+        } catch (Exception e) {
+            log.info(e.getStackTrace().toString());
+        }
+        ;
+
+    }
         public void doWork(int dateIndex, int time) {
 
 
@@ -45,33 +80,71 @@ public class WorkerBean {
             WebDriverWait t = new WebDriverWait(chromeDriver,Duration.ofSeconds(1));
 
             try {
-                chromeDriver.get("https://www.openplay.co.uk/embed-my-account/947");
-                chromeDriver.switchTo().frame(0);
-
-                WebElement element = chromeDriver.findElement(By.xpath("//*[ text() = 'Existing User']"));
-                element.click();
-
-                WebElement email = chromeDriver.findElement(By.id("loginEmail"));
-
-                t.until(ExpectedConditions.visibilityOf(email));
-                t.until(ExpectedConditions.elementToBeClickable(email));
-                email.sendKeys(new CharSequence[]{"shtek@yahoo.com"});
-                WebElement pass = chromeDriver.findElement(By.id("loginPassword"));
-                t.until(ExpectedConditions.visibilityOf(pass));
-                t.until(ExpectedConditions.elementToBeClickable(pass));
-                pass.sendKeys(password);
-                WebElement login = chromeDriver.findElement(By.id("loginBtn"));
-                t.until(ExpectedConditions.visibilityOf(login));
-                t.until(ExpectedConditions.elementToBeClickable(login));
-                login.click();
-
+                loginFunc(chromeDriver);
                 chromeDriver.get("https://www.openplay.co.uk/booking/place/154/select-membership?select=181853");
+                //select appropriate date , index in the drop down
                 Select dateDropDown = new Select(chromeDriver.findElement(By.id("change-date")));
+                dateDropDown.selectByIndex(dateIndex);
+                //select padel out of the options
+                Select useDropDown = new Select(chromeDriver.findElement(By.name("use")));
+                useDropDown.selectByIndex(1);
+                //now will be deciding the time
+                endTime = time + 1;
+                LocalDate date = LocalDate.now().plusDays((long)dateIndex);
+                System.out.println("will book for" + date);
+                //only book for weekdays:
+                if (date.getDayOfWeek().getValue() != 6 || date.getDayOfWeek().getValue() != 7) {
+                    dateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    System.out.println(dateString + "jjjjjjjjjjjjjjjjj");
+                    //here if the time is less than 10 need to add 0
 
+                    String timeString = String.valueOf(time);
+                    if (time < 10)
+                    {
+                        timeString = "0" + timeString;
+                    }
+                    String endTimeString = String.valueOf(endTime);
+                    if (endTime < 10)
+                    {
+                        endTimeString = "0" + endTimeString;
+                    }
 
+                    String searchString="//*[contains(@href,'/booking/place/154/pricing?start=" + timeString + ":00&end=" + endTimeString + ":00&date=" + dateString + "&resource_id=3530&use_id=83')]";
 
+                    chromeDriver.findElement(By.xpath(searchString));
+                   //when there are 2 courts we choose first court
+                    String bookingUrlFirstColumn = "https://www.openplay.co.uk/booking/place/154/pricing?start=" + timeString + ":00&end=" + endTimeString + ":00&date=" + dateString + "&resource_id=3530&use_id=83";
+                    chromeDriver.get(bookingUrlFirstColumn);
+                   System.out.println("booking first column " + bookingUrlFirstColumn);
+                    chromeDriver.executeScript("javascript:selectPrice('11')", new Object[0]);
+                    WebElement cardContinue = chromeDriver.findElement(By.id("cart-continue"));
+                    t.until(ExpectedConditions.visibilityOf(cardContinue));
+                    t.until(ExpectedConditions.elementToBeClickable(cardContinue));
+                    cardContinue.click();
+                    System.out.println("got this far");
+                    WebElement cont = chromeDriver.findElement(By.id("continue"));
+                    t.until(ExpectedConditions.visibilityOf(cont));
+                    t.until(ExpectedConditions.elementToBeClickable(cont));
+                    cont.click();
+                    WebElement checkbox = chromeDriver.findElement(By.id("confirm-checkbox"));
+                    t.until(ExpectedConditions.elementToBeClickable(checkbox));
+                    checkbox.click();
+                    WebElement completeOrder = chromeDriver.findElement(By.id("complete-order"));
+                    t.until(ExpectedConditions.elementToBeClickable(completeOrder));
+                    completeOrder.click();
+                    //need to jump to a new window frame
+                  chromeDriver.switchTo().frame("smallModal-frame");
+                //    System.out.println("able to switch-1------------------");
 
-                Thread.sleep(9000L);
+                 //   chromeDriver.switchTo().frame(1);
+                    //chromeDriver.
+                    WebElement frame = chromeDriver.findElement(By.xpath("//iframe[contains(@name,'__privateStripe')]"));
+
+                    System.out.println("able to switch--2-----------------");
+
+                    WebElement cardNumber = chromeDriver.findElement(By.id("root"));               }
+                System.out.println("got this far found card number");
+                    Thread.sleep(20000L);
             }
             catch (Exception e)
             {
