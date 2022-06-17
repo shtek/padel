@@ -139,10 +139,10 @@ public class WorkerBean {
                  //   chromeDriver.switchTo().frame(1);
                     //chromeDriver.
                     WebElement frame = chromeDriver.findElement(By.xpath("//iframe[contains(@name,'__privateStripe')]"));
-
+                    chromeDriver.switchTo().frame(frame);
                     System.out.println("able to switch--2-----------------");
 
-                    WebElement cardNumber = chromeDriver.findElement(By.id("root"));               }
+                    WebElement iFrame = chromeDriver.findElement(By.id("root"));               }
                 System.out.println("got this far found card number");
                     Thread.sleep(20000L);
             }
