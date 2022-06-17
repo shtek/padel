@@ -141,8 +141,19 @@ public class WorkerBean {
                     WebElement frame = chromeDriver.findElement(By.xpath("//iframe[contains(@name,'__privateStripe')]"));
                     chromeDriver.switchTo().frame(frame);
                     System.out.println("able to switch--2-----------------");
+                 //    "ElementsApp is-empty"
 
-                    WebElement iFrame = chromeDriver.findElement(By.id("root"));               }
+                    WebElement root = chromeDriver.findElement(By.id("root"));
+                    //works up to here
+                    // WebElement someform=   chromeDriver.findElement(By.className("ElementsApp is-empty"));
+                    WebElement someform=   chromeDriver.findElement(By.xpath("//form[contains(@class,'ElementsApp')]"));
+
+
+                    System.out.println("able to switch--3-----------------");
+                    chromeDriver.switchTo().frame(someform);
+                    System.out.println("able to switch--4-----------------");
+
+                    WebElement cardnumber = chromeDriver.findElement(By.name("cardnumber"));               }
                 System.out.println("got this far found card number");
                     Thread.sleep(20000L);
             }
