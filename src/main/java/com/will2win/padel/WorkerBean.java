@@ -94,7 +94,7 @@ public class WorkerBean {
             LocalDate date = LocalDate.now().plusDays((long)dateIndex);
             System.out.println("will book for" + date);
             //only book for weekdays:
-         //   if (date.getDayOfWeek().getValue() != 6 || date.getDayOfWeek().getValue() != 7) {
+            if (date.getDayOfWeek().getValue() != 6 || date.getDayOfWeek().getValue() != 7) {
                 dateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 System.out.println(dateString + "jjjjjjjjjjjjjjjjj");
                 //here if the time is less than 10 need to add 0
@@ -120,7 +120,6 @@ public class WorkerBean {
                 t.until(ExpectedConditions.visibilityOf(cardContinue));
                 t.until(ExpectedConditions.elementToBeClickable(cardContinue));
                 cardContinue.click();
-                System.out.println("got this far");
                 WebElement cont = chromeDriver.findElement(By.id("continue"));
                 t.until(ExpectedConditions.visibilityOf(cont));
                 t.until(ExpectedConditions.elementToBeClickable(cont));
@@ -133,15 +132,13 @@ public class WorkerBean {
                 completeOrder.click();
                 //need to jump to a new window frame
                 chromeDriver.switchTo().frame("smallModal-frame");
-                //    System.out.println("able to switch-1------------------");
 
-                //   chromeDriver.switchTo().frame(1);
-                //chromeDriver.
-                WebElement frame = chromeDriver.findElement(By.xpath("//iframe[contains(@name,'__privateStripe')]"));
-                chromeDriver.switchTo().frame(frame);
-                System.out.println("able to switch--2-----------------");
-                WebElement root = chromeDriver.findElement(By.id("root"));
-                Thread.sleep(20000L);
+            List  <WebElement> frames = chromeDriver.findElements(By.xpath("//iframe[contains(@name,'__privateStripeFrame')]"));
+            chromeDriver.switchTo().frame(frames.get(0));
+
+
+            //card does not appear for some time, so I need to slow down
+                Thread.sleep(500);
                 String xpath = "//input[@name='cardnumber']";
                 List<WebElement> cardnumbers = chromeDriver.findElements(By.xpath(xpath));
                 //there shall be 2 elements , not sure which I need to populate , so will try to populate 1 and then if it does not work another
@@ -150,16 +147,39 @@ public class WorkerBean {
                 t.until(ExpectedConditions.elementToBeClickable(firstLocation));
                 firstLocation.sendKeys("1111222233334444");
 
-                //populate exp date
+            //get the exp date
+            chromeDriver.switchTo().parentFrame();
+
+            chromeDriver.switchTo().frame(frames.get(1));
+            //populate exp date
                 String expDate = "//input[@name='exp-date']";
                 WebElement expDateElement = chromeDriver.findElement(By.xpath(expDate));
                 t.until(ExpectedConditions.visibilityOf(expDateElement));
                 t.until(ExpectedConditions.elementToBeClickable(expDateElement));
                 expDateElement.sendKeys("0123");
 
-                System.out.println("got this far found card number");
-                Thread.sleep(20000L);
-         //   }
+            chromeDriver.switchTo().parentFrame();
+
+            chromeDriver.switchTo().frame(frames.get(2));
+            //populating cvc
+            String cvcStr = "//input[@name='cvc']";
+            WebElement cvc = chromeDriver.findElement(By.xpath(cvcStr));
+            t.until(ExpectedConditions.visibilityOf(cvc));
+            t.until(ExpectedConditions.elementToBeClickable(cvc));
+             cvc.sendKeys("123");
+
+            chromeDriver.switchTo().parentFrame();
+            WebElement submitButton = chromeDriver.findElement(By.id("submit-card"));
+            t.until(ExpectedConditions.visibilityOf(submitButton));
+            t.until(ExpectedConditions.elementToBeClickable(submitButton));
+            submitButton.click();
+
+
+           System.out.println("successfully booked" + dateString);
+
+
+         //   Thread.sleep(20000L);
+            }
         }
         catch (Exception e)
         {
