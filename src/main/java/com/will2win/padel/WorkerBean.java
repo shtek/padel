@@ -72,7 +72,7 @@ public class WorkerBean {
 
     }
     public void doWork(int dateIndex, int time) {
-
+        //
 
         String chromeDriverLocation = new String();
         if (isWindowsOperatingSystem()) {
