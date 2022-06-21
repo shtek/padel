@@ -19,6 +19,7 @@ target/
 *.iml
 *.ipr
 password.properties
+card.properties
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

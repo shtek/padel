@@ -14,6 +14,6 @@ public class WorkerBeanTest {
     @Test
     public void doTest() {
        //this means 2 weeks
-       workerBean.doWork(12,7);
+       workerBean.doWork(14,16);
     }
 }

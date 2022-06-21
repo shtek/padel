@@ -23,6 +23,7 @@ import static com.will2win.padel.ChromeDriverHelper.isWindowsOperatingSystem;
 @Service
 @Configuration
 @PropertySource("classpath:password.properties")
+@PropertySource("classpath:card.properties")
 public class WorkerBean {
     private static final Logger log = LoggerFactory.getLogger(WorkerBean.class);
 
@@ -33,6 +34,12 @@ public class WorkerBean {
     @Value( "${chromeDriverLocationWindows}" )
     private   String chromeDriverLocationWindows;
 
+    @Value( "${cardnumber}" )
+    private String cardnumber;
+    @Value( "${expiry}" )
+    private String expiry;
+    @Value( "${cvcprop}" )
+    private String cvcprop;
 
     //subroutines that will navigate through the page:
     private void loginFunc(ChromeDriver chromeDriver) {
@@ -61,7 +68,7 @@ public class WorkerBean {
         } catch (Exception e) {
             log.info(e.getStackTrace().toString());
         }
-        ;
+
 
     }
     public void doWork(int dateIndex, int time) {
@@ -114,6 +121,7 @@ public class WorkerBean {
                 //when there are 2 courts we choose first court
                 String bookingUrlFirstColumn = "https://www.openplay.co.uk/booking/place/154/pricing?start=" + timeString + ":00&end=" + endTimeString + ":00&date=" + dateString + "&resource_id=3530&use_id=83";
                 chromeDriver.get(bookingUrlFirstColumn);
+              //this is where the work is really happening.("how much time do I loose by this time ??)
                 System.out.println("booking first column " + bookingUrlFirstColumn);
                 chromeDriver.executeScript("javascript:selectPrice('11')", new Object[0]);
                 WebElement cardContinue = chromeDriver.findElement(By.id("cart-continue"));
@@ -145,7 +153,7 @@ public class WorkerBean {
                 WebElement firstLocation = cardnumbers.get(0) ;
                 t.until(ExpectedConditions.visibilityOf(firstLocation));
                 t.until(ExpectedConditions.elementToBeClickable(firstLocation));
-                firstLocation.sendKeys("1111222233334444");
+                firstLocation.sendKeys(cardnumber);
 
             //get the exp date
             chromeDriver.switchTo().parentFrame();
@@ -166,7 +174,7 @@ public class WorkerBean {
             WebElement cvc = chromeDriver.findElement(By.xpath(cvcStr));
             t.until(ExpectedConditions.visibilityOf(cvc));
             t.until(ExpectedConditions.elementToBeClickable(cvc));
-             cvc.sendKeys("123");
+             cvc.sendKeys(cvcprop);
 
             chromeDriver.switchTo().parentFrame();
             WebElement submitButton = chromeDriver.findElement(By.id("submit-card"));
@@ -178,7 +186,7 @@ public class WorkerBean {
            System.out.println("successfully booked" + dateString);
 
 
-         //   Thread.sleep(20000L);
+            Thread.sleep(20000L);
             }
         }
         catch (Exception e)

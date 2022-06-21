@@ -22,7 +22,7 @@ import java.util.Date;
     private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
 
 
-    @Scheduled(fixedRate = 5000) //every 5 seconds
+    @Scheduled(fixedRate = 500000) //every 5 seconds
     //this is just livebeat, to make sure the system is running
     public void reportCurrentTime() {
         log.info("The time is now {}", dateFormat.format(new Date()));
@@ -37,7 +37,7 @@ import java.util.Date;
     )
     public void doWork() throws Exception {
         System.out.println("Running the midnight task of booking");
-           this.workerBean.doWork(7, 18);
+           this.workerBean.doWork(14, 19);
     }
 
 
