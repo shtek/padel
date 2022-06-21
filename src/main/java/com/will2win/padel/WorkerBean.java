@@ -41,6 +41,17 @@ public class WorkerBean {
     @Value( "${cvcprop}" )
     private String cvcprop;
 
+    ChromeDriver chromeDriver;
+
+
+    private ChromeDriver prepChromeDriver(){
+        String chromeDriverLocation = new String();
+        if (isWindowsOperatingSystem()) {
+            chromeDriverLocation = chromeDriverLocationWindows;
+        }
+         return    ChromeDriverHelper.build(chromeDriverLocation);
+
+    }
     //subroutines that will navigate through the page:
     private void loginFunc(ChromeDriver chromeDriver) {
         try {
@@ -71,15 +82,25 @@ public class WorkerBean {
 
 
     }
+
+    public void prepare(){
+        System.out.println("Just entered prepare  function" + System.currentTimeMillis());
+        chromeDriver= prepChromeDriver();
+        System.out.println("Started login" + System.currentTimeMillis());
+        loginFunc(chromeDriver);
+        System.out.println("finished login" + System.currentTimeMillis());
+        System.out.println("Just left prepare  function" + System.currentTimeMillis());
+
+    }
+
+/*
+Things to remove:
+Loading of the driver
+Has to be called before as it is time consuming
+ */
     public void doWork(int dateIndex, int time) {
         //
-
-        String chromeDriverLocation = new String();
-        if (isWindowsOperatingSystem()) {
-            chromeDriverLocation = chromeDriverLocationWindows;
-        }
-        ChromeDriver chromeDriver=      ChromeDriverHelper.build(chromeDriverLocation);
-
+        System.out.println("Just entered doWork  function" + System.currentTimeMillis());
 
 
         int endTime = 0;
@@ -88,14 +109,17 @@ public class WorkerBean {
         WebDriverWait t = new WebDriverWait(chromeDriver,Duration.ofSeconds(1));
 
         try {
-            loginFunc(chromeDriver);
+            //loginFunc(chromeDriver);
             chromeDriver.get("https://www.openplay.co.uk/booking/place/154/select-membership?select=181853");
             //select appropriate date , index in the drop down
+            //will comment this now, I think there is no need to select date and use
+         /*
             Select dateDropDown = new Select(chromeDriver.findElement(By.id("change-date")));
             dateDropDown.selectByIndex(dateIndex);
             //select padel out of the options
             Select useDropDown = new Select(chromeDriver.findElement(By.name("use")));
             useDropDown.selectByIndex(1);
+       */
             //now will be deciding the time
             endTime = time + 1;
             LocalDate date = LocalDate.now().plusDays((long)dateIndex);
@@ -114,15 +138,22 @@ public class WorkerBean {
                 if (endTime < 10) {
                     endTimeString = "0" + endTimeString;
                 }
-
+                System.out.println("Started selecting time and date" + System.currentTimeMillis());
+                //why do I need to search this at all.
+                //I assume there is one court only now , so no need to search I assume there is a slot
+         /*
                 String searchString = "//*[contains(@href,'/booking/place/154/pricing?start=" + timeString + ":00&end=" + endTimeString + ":00&date=" + dateString + "&resource_id=3530&use_id=83')]";
 
                 chromeDriver.findElement(By.xpath(searchString));
+           */
                 //when there are 2 courts we choose first court
                 String bookingUrlFirstColumn = "https://www.openplay.co.uk/booking/place/154/pricing?start=" + timeString + ":00&end=" + endTimeString + ":00&date=" + dateString + "&resource_id=3530&use_id=83";
                 chromeDriver.get(bookingUrlFirstColumn);
-              //this is where the work is really happening.("how much time do I loose by this time ??)
+                System.out.println("finished date selection,actual booking commence" + System.currentTimeMillis());
+
+                //this is where the work is really happening.("how much time do I loose by this time ??)
                 System.out.println("booking first column " + bookingUrlFirstColumn);
+                //this means you book using the card and not as a guest
                 chromeDriver.executeScript("javascript:selectPrice('11')", new Object[0]);
                 WebElement cardContinue = chromeDriver.findElement(By.id("cart-continue"));
                 t.until(ExpectedConditions.visibilityOf(cardContinue));
@@ -186,7 +217,7 @@ public class WorkerBean {
            System.out.println("successfully booked" + dateString);
 
 
-            Thread.sleep(20000L);
+            Thread.sleep(10000L);
             }
         }
         catch (Exception e)
