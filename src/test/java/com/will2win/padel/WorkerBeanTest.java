@@ -14,6 +14,12 @@ public class WorkerBeanTest {
     @Test
     public void doTest() {
        //this means 2 weeks
-       workerBean.doWork(1,7);
+      workerBean.prepare();
+        try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        workerBean.doWork(1,7);
     }
 }

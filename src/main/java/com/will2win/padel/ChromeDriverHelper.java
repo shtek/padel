@@ -33,7 +33,10 @@ public class ChromeDriverHelper {
       System.out.println("usr dirr!!!!!!!!!!!!!!!!11" + System.getProperty("user.dir"));
 
                  System.setProperty("webdriver.chrome.driver", chromeDriverLocation);
-      ChromeDriver driver = new ChromeDriver();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+
+        ChromeDriver driver = new ChromeDriver(options);
         return driver;
     }
 }

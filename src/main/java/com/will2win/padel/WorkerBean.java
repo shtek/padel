@@ -93,11 +93,7 @@ public class WorkerBean {
 
     }
 
-/*
-Things to remove:
-Loading of the driver
-Has to be called before as it is time consuming
- */
+
     public void doWork(int dateIndex, int time) {
         //
         System.out.println("Just entered doWork  function" + System.currentTimeMillis());
@@ -109,7 +105,6 @@ Has to be called before as it is time consuming
         WebDriverWait t = new WebDriverWait(chromeDriver,Duration.ofSeconds(1));
 
         try {
-            //loginFunc(chromeDriver);
             chromeDriver.get("https://www.openplay.co.uk/booking/place/154/select-membership?select=181853");
             //select appropriate date , index in the drop down
             //will comment this now, I think there is no need to select date and use
@@ -125,7 +120,8 @@ Has to be called before as it is time consuming
             LocalDate date = LocalDate.now().plusDays((long)dateIndex);
             System.out.println("will book for" + date);
             //only book for weekdays:
-            if (date.getDayOfWeek().getValue() != 6 || date.getDayOfWeek().getValue() != 7) {
+            //this shall move to cron settings
+           //if (date.getDayOfWeek().getValue() != 6 || date.getDayOfWeek().getValue() != 7) {
                 dateString = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 System.out.println(dateString + "jjjjjjjjjjjjjjjjj");
                 //here if the time is less than 10 need to add 0
@@ -195,7 +191,7 @@ Has to be called before as it is time consuming
                 WebElement expDateElement = chromeDriver.findElement(By.xpath(expDate));
                 t.until(ExpectedConditions.visibilityOf(expDateElement));
                 t.until(ExpectedConditions.elementToBeClickable(expDateElement));
-                expDateElement.sendKeys("0123");
+                expDateElement.sendKeys(expiry);
 
             chromeDriver.switchTo().parentFrame();
 
@@ -218,7 +214,7 @@ Has to be called before as it is time consuming
 
 
             Thread.sleep(10000L);
-            }
+           // }
         }
         catch (Exception e)
         {
