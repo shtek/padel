@@ -33,16 +33,16 @@ import java.util.Date;
 
     //run at midnight once in 24 hrs
     @Scheduled(
-            cron = "20 54 0 * * *"
+            cron = "0 0 0 * * *"
     )
     public void doWork() throws Exception {
         System.out.println("Running the midnight task of booking for 19");
-           this.workerBean.doWork(1, 8);
+           this.workerBean.doWork(14, 19);
     }
 
 
     @Scheduled(
-            cron = "0 54 0 * * *"
+            cron = "0 59 23 * * *"
     )
     public void prep() throws Exception {
         System.out.println("Running the midnight task of preparing");
