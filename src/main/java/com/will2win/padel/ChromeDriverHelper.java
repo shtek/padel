@@ -28,11 +28,24 @@ public class ChromeDriverHelper {
         return os.contains("Windows");
 
     }
-    public static ChromeDriver build(String chromeDriverLocation) {
+    public static ChromeDriver build() {
 
       System.out.println("usr dirr!!!!!!!!!!!!!!!!11" + System.getProperty("user.dir"));
 
-                 System.setProperty("webdriver.chrome.driver", chromeDriverLocation);
+
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+
+        ChromeDriver driver = new ChromeDriver(options);
+        return driver;
+    }
+
+    //Depricate
+    public static ChromeDriver build(String chromeDriverLocation) {
+
+        System.out.println("usr dirr!!!!!!!!!!!!!!!!11" + System.getProperty("user.dir"));
+
+        System.setProperty("webdriver.chrome.driver", chromeDriverLocation);
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless");
 

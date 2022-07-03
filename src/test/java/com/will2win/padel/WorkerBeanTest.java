@@ -11,15 +11,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WorkerBeanTest {
     @Autowired
     WorkerBean workerBean;
-    @Test
+   // @Test
     public void doTest() {
        //this means 2 weeks
       workerBean.prepare();
         try {
-            Thread.sleep(7000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        workerBean.doWork(1,7);
+        workerBean.doWork(11,13);
     }
 }

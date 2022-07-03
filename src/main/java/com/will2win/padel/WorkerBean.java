@@ -1,4 +1,7 @@
 package com.will2win.padel;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,12 +47,45 @@ public class WorkerBean {
     ChromeDriver chromeDriver;
 
 
-    private ChromeDriver prepChromeDriver(){
+   //this is now depricated
+    public ChromeDriver prepChromeDriver(){
         String chromeDriverLocation = new String();
         if (isWindowsOperatingSystem()) {
             chromeDriverLocation = chromeDriverLocationWindows;
         }
+        //here will create another build function in chromeDriverHelper, without parameters.
+        //because location of driver is going to be loaded dynamically
          return    ChromeDriverHelper.build(chromeDriverLocation);
+
+    }
+
+    public ChromeDriver prepareChromeDriver(){
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL resource = classLoader.getResource("BOOT-INF/classes/drivers/Windows/chromedriver.exe");
+        File f = new File("Driver");
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        File chromeDr = new File("Driver" + File.separator + "chromedriver.exe");
+        if (!chromeDr.exists()) {
+            try {
+                chromeDr.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            try {
+                org.apache.commons.io.FileUtils.copyURLToFile(resource, chromeDr);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        //so this is where we will set up the property for chromeDriver
+        System.setProperty("webdriver.chrome.driver", chromeDr.getAbsolutePath());
+        System.out.println("webdriver + " + System.getProperty("webdriver.chrome.driver"));
+        //here will create another build function in chromeDriverHelper, without parameters.
+        //because location of driver is going to be loaded dynamically
+        return    ChromeDriverHelper.build();
 
     }
     //subroutines that will navigate through the page:
@@ -85,10 +121,12 @@ public class WorkerBean {
 
     public void prepare(){
         System.out.println("Just entered prepare  function" + System.currentTimeMillis());
-        chromeDriver= prepChromeDriver();
+        chromeDriver= prepareChromeDriver();
         System.out.println("Started login" + System.currentTimeMillis());
         loginFunc(chromeDriver);
         System.out.println("finished login" + System.currentTimeMillis());
+        chromeDriver.get("https://www.openplay.co.uk/booking/place/154/select-membership?select=181853");
+
         System.out.println("Just left prepare  function" + System.currentTimeMillis());
 
     }
@@ -105,7 +143,7 @@ public class WorkerBean {
         WebDriverWait t = new WebDriverWait(chromeDriver,Duration.ofSeconds(1));
 
         try {
-            chromeDriver.get("https://www.openplay.co.uk/booking/place/154/select-membership?select=181853");
+          // chromeDriver.get("https://www.openplay.co.uk/booking/place/154/select-membership?select=181853");
             //select appropriate date , index in the drop down
             //will comment this now, I think there is no need to select date and use
          /*
@@ -149,8 +187,11 @@ public class WorkerBean {
 
                 //this is where the work is really happening.("how much time do I loose by this time ??)
                 System.out.println("booking first column " + bookingUrlFirstColumn);
+                //Thread.sleep(1000);
                 //this means you book using the card and not as a guest
                 chromeDriver.executeScript("javascript:selectPrice('11')", new Object[0]);
+                //perhaps need to slow down
+            //   Thread.sleep(500);
                 WebElement cardContinue = chromeDriver.findElement(By.id("cart-continue"));
                 t.until(ExpectedConditions.visibilityOf(cardContinue));
                 t.until(ExpectedConditions.elementToBeClickable(cardContinue));

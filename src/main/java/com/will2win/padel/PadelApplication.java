@@ -10,7 +10,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class PadelApplication {
 
 	public static void main(String[] args) {
+
+		System.setProperty("bookingTime",args[0] );
 		SpringApplication.run(PadelApplication.class, args);
+
 	}
 
 }
